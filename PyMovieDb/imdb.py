@@ -117,10 +117,11 @@ class IMDB:
         """
         try:
             response = self.session.get(url)
+
             result = response.html.xpath("//script[@type='application/ld+json']")[0].text
             result = ''.join(result.splitlines())  # removing newlines
             result = f"""{result}"""
-            # print(result)
+            print(result)
         except IndexError:
             return self.NA
         try:
@@ -144,13 +145,17 @@ class IMDB:
                     # invalid char(s) is/are not in description/trailer/reviewBody schema
                     return self.NA
 
+        countries = response.html.xpath("//a[contains(@href, 'country_of_origin')]/text()")
+        languages = response.html.xpath("//a[contains(@href, 'primary_language')]/text()")
+
         output = {
             "type": result.get('@type'),
             "name": result.get('name'),
             "url": self.baseURL + result.get('url').split("/title")[-1],
             "poster": result.get('image'),
             "description": result.get('description'),
-            "language": result.get('language'),
+            "languages": languages,
+            "countries": countries,
             "review": {
                 "author": result.get("review", {'author': {'name': None}}).get('author').get('name'),
                 "dateCreated": result.get("review", {"dateCreated": None}).get("dateCreated"),
@@ -414,4 +419,6 @@ class IMDB:
 
         return self.get_popular(url)
 
-
+if __name__ == "__main__":
+    imdb = IMDB()
+    imdb.get_by_id("tt18412256")
