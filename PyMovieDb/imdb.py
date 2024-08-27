@@ -150,6 +150,7 @@ class IMDB:
             "url": self.baseURL + result.get('url').split("/title")[-1],
             "poster": result.get('image'),
             "description": result.get('description'),
+            "language": result.get('language'),
             "review": {
                 "author": result.get("review", {'author': {'name': None}}).get('author').get('name'),
                 "dateCreated": result.get("review", {"dateCreated": None}).get("dateCreated"),
@@ -177,15 +178,16 @@ class IMDB:
             "keywords": result.get("keywords"),
             "duration": result.get("duration"),
             "actor": [
-                {"name": actor.get("name"), "url": actor.get("url")} for actor in result.get("actor", [])
+                {"name": actor.get("name"), "id": actor.get("url").split('/')[2]} for actor in result.get("actor", [])
             ],
             "director": [
-                {"name": director.get("name"), "url": director.get("url")} for director in result.get("director", [])
+                {"name": director.get("name"), "id": director.get("url").split('/')[2]} for director in result.get("director", [])
             ],
             "creator": [
                 {"name": creator.get("name"), "url": creator.get("url")} for creator in result.get("creator", [])
                 if creator.get('@type') == 'Person'
             ]
+
         }
         return json.dumps(output, indent=2)
 
