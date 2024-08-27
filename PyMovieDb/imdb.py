@@ -121,7 +121,7 @@ class IMDB:
             result = response.html.xpath("//script[@type='application/ld+json']")[0].text
             result = ''.join(result.splitlines())  # removing newlines
             result = f"""{result}"""
-            print(result)
+            # print(result)
         except IndexError:
             return self.NA
         try:
@@ -131,9 +131,8 @@ class IMDB:
             # sometimes json is invalid as 'description' contains inverted commas or other html escape chars
             try:
                 to_parse = ImdbParser(result)
-                # removing trailer & description schema from json string
+                # removing trailer from json string
                 parsed = to_parse.remove_trailer
-                parsed = to_parse.remove_description
                 # print(parsed)
                 result = json.loads(parsed)
             except json.decoder.JSONDecodeError as e:
@@ -192,8 +191,8 @@ class IMDB:
                 {"name": creator.get("name"), "url": creator.get("url")} for creator in result.get("creator", [])
                 if creator.get('@type') == 'Person'
             ]
-
         }
+
         return json.dumps(output, indent=2)
 
     def get_by_name(self, name, year=None, tv=False):
